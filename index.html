@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>حاسبة الاستثمار</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: linear-gradient(135deg, #f8faf3 0%, #f2f7ed 45%, #f8fafc 100%);
+      --card-bg: #ffffff;
+      --border: #e5e7eb;
+      --primary: #16a34a;
+      --primary-dark: #15803d;
+      --accent: #facc15;
+      --muted: #475569;
+      --text: #0f172a;
+      --shadow: 0 12px 40px rgba(22, 163, 74, 0.12);
+      --radius: 16px;
+      --success: #16a34a;
+      --danger: #ef4444;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: 'IBM Plex Sans Arabic', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 24px;
+    }
+
+    .page {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header.hero {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+      margin-bottom: 18px;
+    }
+
+    header.hero h1 {
+      margin: 0;
+      font-size: 28px;
+      letter-spacing: -0.5px;
+    }
+
+    header.hero p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    select, input, button {
+      font-family: inherit;
+    }
+
+    .tab-bar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 12px 0;
+    }
+
+    .tab-bar button {
+      border: 1px solid var(--border);
+      background: #ecfdf3;
+      color: var(--text);
+      padding: 10px 14px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s, border 0.2s;
+      box-shadow: 0 8px 18px rgba(22, 163, 74, 0.12);
+      min-width: 140px;
+      text-align: center;
+      font-weight: 700;
+    }
+
+    .tab-bar button.active {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #0f172a;
+      border-color: transparent;
+      transform: translateY(-1px);
+      box-shadow: 0 12px 28px rgba(22, 163, 74, 0.22);
+    }
+
+    .panels { display: grid; gap: 14px; }
+
+    .panel {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px 16px;
+      box-shadow: var(--shadow);
+      display: none;
+    }
+
+    .panel.active { display: block; }
+
+    .accordion-toggle {
+      display: none;
+      width: 100%;
+      background: transparent;
+      color: var(--text);
+      border: none;
+      padding: 12px 6px;
+      font-size: 17px;
+      font-weight: 700;
+      text-align: start;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .chevron {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-inline-start: 2px solid var(--accent);
+      border-block-start: 2px solid var(--accent);
+      transform: rotate(135deg);
+      transition: transform 0.2s ease;
+      margin-inline-start: 4px;
+    }
+
+    .panel.open .chevron {
+      transform: rotate(225deg);
+    }
+
+    .input-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .field label {
+      font-weight: 700;
+      color: var(--text);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      gap: 8px;
+      transition: border 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+
+    .input-wrap:focus-within {
+      border-color: var(--accent);
+      box-shadow: 0 8px 20px rgba(22, 163, 74, 0.16);
+      background: #ffffff;
+    }
+
+    .currency-badge {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #e2e8f0;
+      color: var(--text);
+      border-radius: 10px;
+      padding: 6px 10px;
+      font-weight: 800;
+      font-size: 13px;
+      pointer-events: none;
+    }
+
+    input[type="number"],
+    input[type="text"] {
+      flex: 1;
+      border: none;
+      outline: none;
+      background: transparent;
+      color: var(--text);
+      font-size: 16px;
+      direction: ltr;
+      padding-left: 12px;
+    }
+
+    .input-wrap.has-badge input[type="number"],
+    .input-wrap.has-badge input[type="text"] {
+      padding-left: 90px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .btn {
+      padding: 11px 16px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      font-weight: 800;
+      transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s, opacity 0.2s;
+    }
+
+    .btn.primary {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #0f172a;
+      box-shadow: 0 12px 35px rgba(22, 163, 74, 0.22);
+    }
+
+    .btn.secondary {
+      background: #fefce8;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+
+    .notice {
+      margin-top: 8px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(239, 68, 68, 0.08);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      color: #b91c1c;
+      display: none;
+    }
+
+    .notice.active { display: block; }
+
+    .result-card {
+      margin-top: 14px;
+      background: linear-gradient(135deg, rgba(22, 163, 74, 0.08), rgba(250, 204, 21, 0.08));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .result-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .result-value {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--primary-dark);
+    }
+
+    .summary { color: var(--muted); margin-top: 6px; line-height: 1.6; }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      margin: 22px 0 6px;
+      font-size: 14px;
+    }
+
+    @media (max-width: 768px) {
+      body { padding: 18px; }
+      .tab-bar { display: none; }
+      .panel { display: block; padding-top: 0; }
+      .accordion-toggle { display: flex; }
+      .panel-inner { display: none; }
+      .panel.open .panel-inner { display: block; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="hero">
+      <h1>حاسبة الاستثمار</h1>
+      <p>أدوات استثمارية عربية لحساب المبلغ النهائي، المبلغ الأولي، المدة، العائد، أو الاستثمار الشهري مع افتراض إيداع نهاية الشهر.</p>
+    </header>
+
+    <nav class="tab-bar" aria-label="أنواع الحاسبة">
+      <button class="active" data-target="fv">المبلغ النهائي</button>
+      <button data-target="pv">المبلغ الأولي</button>
+      <button data-target="n">المدة المطلوبة</button>
+      <button data-target="rate">العائد</button>
+      <button data-target="pmt">الاستثمار الشهري</button>
+    </nav>
+
+    <div class="panels">
+      <section class="panel active open" id="fv" aria-labelledby="fv-label">
+        <button class="accordion-toggle" aria-expanded="true"><span class="chevron"></span>المبلغ النهائي (FV)</button>
+        <div class="panel-inner">
+          <div class="input-grid">
+            <div class="field">
+              <label for="fv-principal">المبلغ الأولي (P)</label>
+              <div class="input-wrap has-badge"><span class="currency-badge">ريال</span><input id="fv-principal" data-amount="true" type="text" inputmode="decimal" value="500000"></div>
+            </div>
+            <div class="field">
+              <label for="fv-pmt">الاستثمار الشهري (PMT)</label>
+              <div class="input-wrap has-badge"><span class="currency-badge">ريال</span><input id="fv-pmt" data-amount="true" type="text" inputmode="decimal" value="5000"></div>
+            </div>
+            <div class="field">
+              <label for="fv-rate">العائد (%)</label>
+              <div class="input-wrap has-badge"><span class="currency-badge">%</span><input id="fv-rate" type="number" min="0" step="0.01" value="12"></div>
+            </div>
+            <div class="field">
+              <label for="fv-years">المدة (سنوات)</label>
+              <div class="input-wrap has-badge"><span class="currency-badge">سنوات</span><input id="fv-years" type="number" min="0" step="1" value="15"></div>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn primary" data-action="calculate" data-type="fv">احسب</button>
+            <button class="btn secondary" data-action="reset" data-type="fv">إعادة تعيين</button>
+          </div>
+          <div class="notice" id="fv-notice" role="status" aria-live="polite"></div>
+          <div class="result-card">
+            <div class="result-header">
+              <div>
+                <div class="result-label">المبلغ النهائي المتوقع</div>
+                <div class="result-value" id="fv-result">—</div>
+              </div>
+              <button class="btn secondary" data-copy="fv-result">انسخ النتيجة</button>
+            </div>
+            <div class="summary" id="fv-summary">أدخل بياناتك ثم اضغط احسب.</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="pv" aria-labelledby="pv-label">
+        <button class="accordion-toggle" aria-expanded="false"><span class="chevron"></span>المبلغ الأولي (P)</button>
+        <div class="panel-inner">
+          <div class="input-grid">
+            <div class="field">
+              <label for="pv-fv">المبلغ النهائي (FV)</label>
+              <div class="input-wrap has-badge"><span class="currency-badge">ريال</span><input id="pv-fv" data-amount="true" type="text" inputmode="decimal" value="500000"></div>
+            </div>
+            <div class="field">
+              <label for="pv-pmt">الاستثمار الشهري (PMT)</label>
+              <div class="input-wrap has-badge"><span class="currency-badge">ريال</span><input id="pv-pmt" data-amount="true" type="text" inputmode="decimal" value="5000"></div>
+            </div>
+            <div class="field">
+              <label for="pv-rate">العائد (%)</label>
+              <div class="input-wrap has-badge"><span class="currency-badge">%</span><input id="pv-rate" type="number" min="0" step="0.01" value="12"></div>
+            </div>
+            <div class="field">
+              <label for="pv-years">المدة (سنوات)</label>
+              <div class="input-wrap has-badge"><span class="currency-badge">سنوات</span><input id="pv-years" type="number" min="0" step="1" value="15"></div>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn primary" data-action="calculate" data-type="pv">احسب</button>
+            <button class="btn secondary" data-action="reset" data-type="pv">إعادة تعيين</button>
+          </div>
+          <div class="notice" id="pv-notice" role="status" aria-live="polite"></div>
+          <div class="result-card">
+            <div class="result-header">
+              <div>
+                <div class="result-label">المبلغ الأولي المطلوب</div>
+                <div class="result-value" id="pv-result">—</div>
+              </div>
+              <button class="btn secondary" data-copy="pv-result">انسخ النتيجة</button>
+            </div>
+            <div class="summary" id="pv-summary">أدخل بياناتك ثم اضغط احسب.</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="n" aria-labelledby="n-label">
+        <button class="accordion-toggle" aria-expanded="false"><span class="chevron"></span>المدة المطلوبة (N)</button>
+        <div class="panel-inner">
+          <div class="input-grid">
+            <div class="field">
+              <label for="n-p">المبلغ الأولي (P)</label>
+              <div class="input-wrap has-badge"><span class="currency-badge">ريال</span><input id="n-p" data-amount="true" type="text" inputmode="decimal" value="500000"></div>
+            </div>
+            <div class="field">
+              <label for="n-fv">المبلغ النهائي (FV)</label>
+              <div class="input-wrap has-badge"><span class="currency-badge">ريال</span><input id="n-fv" data-amount="true" type="text" inputmode="decimal" value="500000"></div>
+            </div>
+            <div class="field">
+              <label for="n-pmt">الاستثمار الشهري (PMT)</label>
+              <div class="input-wrap has-badge"><span class="currency-badge">ريال</span><input id="n-pmt" data-amount="true" type="text" inputmode="decimal" value="5000"></div>
+            </div>
+            <div class="field">
+              <label for="n-rate">العائد (%)</label>
+              <div class="input-wrap has-badge"><span class="currency-badge">%</span><input id="n-rate" type="number" min="0" step="0.01" value="12"></div>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn primary" data-action="calculate" data-type="n">احسب</button>
+            <button class="btn secondary" data-action="reset" data-type="n">إعادة تعيين</button>
+          </div>
+          <div class="notice" id="n-notice" role="status" aria-live="polite"></div>
+          <div class="result-card">
+            <div class="result-header">
+              <div>
+                <div class="result-label">المدة المطلوبة</div>
+                <div class="result-value" id="n-result">—</div>
+              </div>
+              <button class="btn secondary" data-copy="n-result">انسخ النتيجة</button>
+            </div>
+            <div class="summary" id="n-summary">أدخل بياناتك ثم اضغط احسب.</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="rate" aria-labelledby="rate-label">
+        <button class="accordion-toggle" aria-expanded="false"><span class="chevron"></span>العائد (r)</button>
+        <div class="panel-inner">
+          <div class="input-grid">
+            <div class="field">
+              <label for="rate-fv">المبلغ النهائي (FV)</label>
+              <div class="input-wrap has-badge"><span class="currency-badge">ريال</span><input id="rate-fv" data-amount="true" type="text" inputmode="decimal" value="500000"></div>
+            </div>
+            <div class="field">
+              <label for="rate-p">المبلغ الأولي (P)</label>
+              <div class="input-wrap has-badge"><span class="currency-badge">ريال</span><input id="rate-p" data-amount="true" type="text" inputmode="decimal" value="500000"></div>
+            </div>
+            <div class="field">
+              <label for="rate-pmt">الاستثمار الشهري (PMT)</label>
+              <div class="input-wrap has-badge"><span class="currency-badge">ريال</span><input id="rate-pmt" data-amount="true" type="text" inputmode="decimal" value="5000"></div>
+            </div>
+            <div class="field">
+              <label for="rate-years">المدة (سنوات)</label>
+              <div class="input-wrap has-badge"><span class="currency-badge">سنوات</span><input id="rate-years" type="number" min="0" step="1" value="15"></div>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn primary" data-action="calculate" data-type="rate">احسب</button>
+            <button class="btn secondary" data-action="reset" data-type="rate">إعادة تعيين</button>
+          </div>
+          <div class="notice" id="rate-notice" role="status" aria-live="polite"></div>
+          <div class="result-card">
+            <div class="result-header">
+              <div>
+                <div class="result-label">العائد المطلوب</div>
+                <div class="result-value" id="rate-result">—</div>
+              </div>
+              <button class="btn secondary" data-copy="rate-result">انسخ النتيجة</button>
+            </div>
+            <div class="summary" id="rate-summary">أدخل بياناتك ثم اضغط احسب.</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="pmt" aria-labelledby="pmt-label">
+        <button class="accordion-toggle" aria-expanded="false"><span class="chevron"></span>الاستثمار الشهري (PMT)</button>
+        <div class="panel-inner">
+          <div class="input-grid">
+            <div class="field">
+              <label for="pmt-fv">المبلغ النهائي (FV)</label>
+              <div class="input-wrap has-badge"><span class="currency-badge">ريال</span><input id="pmt-fv" data-amount="true" type="text" inputmode="decimal" value="500000"></div>
+            </div>
+            <div class="field">
+              <label for="pmt-p">المبلغ الأولي (P)</label>
+              <div class="input-wrap has-badge"><span class="currency-badge">ريال</span><input id="pmt-p" data-amount="true" type="text" inputmode="decimal" value="500000"></div>
+            </div>
+            <div class="field">
+              <label for="pmt-rate">العائد (%)</label>
+              <div class="input-wrap has-badge"><span class="currency-badge">%</span><input id="pmt-rate" type="number" min="0" step="0.01" value="12"></div>
+            </div>
+            <div class="field">
+              <label for="pmt-years">المدة (سنوات)</label>
+              <div class="input-wrap has-badge"><span class="currency-badge">سنوات</span><input id="pmt-years" type="number" min="0" step="1" value="15"></div>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn primary" data-action="calculate" data-type="pmt">احسب</button>
+            <button class="btn secondary" data-action="reset" data-type="pmt">إعادة تعيين</button>
+          </div>
+          <div class="notice" id="pmt-notice" role="status" aria-live="polite"></div>
+          <div class="result-card">
+            <div class="result-header">
+              <div>
+                <div class="result-label">الاستثمار الشهري المطلوب</div>
+                <div class="result-value" id="pmt-result">—</div>
+              </div>
+              <button class="btn secondary" data-copy="pmt-result">انسخ النتيجة</button>
+            </div>
+            <div class="summary" id="pmt-summary">أدخل بياناتك ثم اضغط احسب.</div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const tabButtons = document.querySelectorAll('.tab-bar button');
+    const panels = document.querySelectorAll('.panel');
+    const accordionToggles = document.querySelectorAll('.accordion-toggle');
+
+    function formatCurrency(value) {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'SAR',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2
+      }).format(value);
+    }
+
+    function formatPercent(value) {
+      return `${value.toFixed(2)}%`;
+    }
+
+    function monthlyRate(annualPercent) {
+      const r = annualPercent / 100;
+      return Math.pow(1 + r, 1 / 12) - 1;
+    }
+
+    function totalMonths(years) {
+      return years * 12;
+    }
+
+    function showNotice(id, message) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (message) {
+        el.textContent = message;
+        el.classList.add('active');
+      } else {
+        el.textContent = '';
+        el.classList.remove('active');
+      }
+    }
+
+    function resetPanel(type) {
+      const defaults = {
+        principal: 500000,
+        pmt: 5000,
+        rate: 12,
+        years: 15,
+        fv: 500000
+      };
+      const mapping = {
+        fv: ['fv-principal', 'fv-pmt', 'fv-rate', 'fv-years'],
+        pv: ['pv-fv', 'pv-pmt', 'pv-rate', 'pv-years'],
+        n: ['n-p', 'n-fv', 'n-pmt', 'n-rate'],
+        rate: ['rate-fv', 'rate-p', 'rate-pmt', 'rate-years'],
+        pmt: ['pmt-fv', 'pmt-p', 'pmt-rate', 'pmt-years']
+      };
+      mapping[type]?.forEach(id => {
+        const input = document.getElementById(id);
+        if (!input) return;
+        const key = id.includes('fv') && !id.startsWith('fv-') ? 'fv' :
+          id.includes('principal') || ['pv', 'n'].some(k => id === `${k}-p`) ? 'principal' :
+          id.includes('pmt') ? 'pmt' :
+          id.includes('rate') ? 'rate' : 'years';
+        if (input.dataset.amount === 'true') {
+          input.value = formatAmount(defaults[key]);
+        } else {
+          input.value = defaults[key];
+        }
+      });
+      showNotice(`${type}-notice`, '');
+      document.getElementById(`${type}-result`).textContent = '—';
+      document.getElementById(`${type}-summary`).textContent = 'أدخل بياناتك ثم اضغط احسب.';
+      document.getElementById(`${type}-details`).innerHTML = '';
+    }
+
+    function validateNumbers(values, requiredKeys, noticeId) {
+      for (const key of requiredKeys) {
+        const value = values[key];
+        if (value === '' || value === null || Number.isNaN(value)) {
+          showNotice(noticeId, 'يرجى إدخال جميع الحقول المطلوبة.');
+          return false;
+        }
+        if (value < 0) {
+          showNotice(noticeId, 'لا يُسمح بالقيم السالبة.');
+          return false;
+        }
+      }
+      showNotice(noticeId, '');
+      return true;
+    }
+
+    function parseAmount(value) {
+      if (typeof value !== 'string') return Number(value);
+      const cleaned = value.replace(/,/g, '').trim();
+      if (!cleaned) return NaN;
+      const num = Number(cleaned);
+      return Number.isFinite(num) ? num : NaN;
+    }
+
+    function formatAmount(value) {
+      const num = Number(value);
+      if (!Number.isFinite(num)) return '';
+      return new Intl.NumberFormat('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(num);
+    }
+
+    function getInputs(prefixes) {
+      const result = {};
+      prefixes.forEach(([key, id]) => {
+        const el = document.getElementById(id);
+        if (!el) {
+          result[key] = NaN;
+        } else if (el.dataset.amount === 'true') {
+          result[key] = parseAmount(el.value);
+        } else {
+          result[key] = Number(el.value);
+        }
+      });
+      return result;
+    }
+
+    const amountInputs = document.querySelectorAll('[data-amount="true"]');
+
+    amountInputs.forEach(input => {
+      const applyFormat = () => {
+        const num = parseAmount(input.value);
+        if (!Number.isNaN(num)) input.value = formatAmount(num);
+      };
+      input.addEventListener('focus', () => {
+        input.value = (input.value || '').replace(/,/g, '');
+      });
+      input.addEventListener('input', () => {
+        const cleaned = input.value.replace(/[^0-9.]/g, '');
+        if (cleaned !== input.value) {
+          input.value = cleaned;
+          if (input.setSelectionRange) {
+            const end = cleaned.length;
+            input.setSelectionRange(end, end);
+          }
+        }
+      });
+      input.addEventListener('blur', applyFormat);
+      applyFormat();
+    });
+
+    function computeFV({ P, PMT, rate, years, timing }) {
+      const i = monthlyRate(rate);
+      const N = totalMonths(years);
+      let fv;
+      if (N === 0) {
+        fv = P;
+      } else if (i === 0) {
+        fv = P + PMT * N;
+      } else {
+        const factor = Math.pow(1 + i, N);
+        const annuity = ((factor - 1) / i) * (timing === 'start' ? (1 + i) : 1);
+        fv = P * factor + PMT * annuity;
+      }
+      return { fv, N, i };
+    }
+
+    function computePV({ FV, PMT, rate, years, timing }) {
+      const i = monthlyRate(rate);
+      const N = totalMonths(years);
+      let P;
+      if (i === 0) {
+        if (N === 0) return { error: 'لا يمكن حساب المبلغ الأولي بدون مدة.' };
+        P = FV - PMT * N;
+      } else {
+        const factor = Math.pow(1 + i, N);
+        const adjPMT = timing === 'start' ? PMT * (1 + i) : PMT;
+        P = (FV + adjPMT / i) / factor - adjPMT / i;
+      }
+      return { P, N, i };
+    }
+
+    function computeN({ P, FV, PMT, rate, timing }) {
+      const i = monthlyRate(rate);
+      let N;
+      if (i === 0) {
+        if (PMT === 0) return { error: 'يجب أن يكون هناك استثمار شهري أو عائد لحساب المدة.' };
+        N = (FV - P) / PMT;
+        if (N < 0) return { error: 'القيم المدخلة تعطي مدة سالبة.' };
+      } else {
+        const adjPMT = timing === 'start' ? PMT * (1 + i) : PMT;
+        const numerator = FV + adjPMT / i;
+        const denominator = P + adjPMT / i;
+        if (numerator <= 0 || denominator <= 0) return { error: 'القيم المدخلة لا تسمح بحساب المدة.' };
+        const ratio = numerator / denominator;
+        N = Math.log(ratio) / Math.log(1 + i);
+        if (!Number.isFinite(N) || N < 0) return { error: 'لا يمكن إيجاد مدة مناسبة بهذه القيم.' };
+      }
+      return { N, i };
+    }
+
+    function fvFromRate({ P, PMT, i, N, timing }) {
+      if (i === 0) return P + PMT * N;
+      const factor = Math.pow(1 + i, N);
+      const annuity = ((factor - 1) / i) * (timing === 'start' ? (1 + i) : 1);
+      return P * factor + PMT * annuity;
+    }
+
+    function computeRate({ FV, P, PMT, years, timing }) {
+      const N = totalMonths(years);
+      if (N <= 0) return { error: 'المدة يجب أن تكون أكبر من صفر.' };
+      let low = 0;
+      let high = 0.5;
+      let best = null;
+      for (let k = 0; k < 10; k++) {
+        const i = Math.pow(1 + high, 1 / 12) - 1;
+        const trial = fvFromRate({ P, PMT, i, N, timing });
+        if (trial < FV) {
+          high += 0.25;
+        } else {
+          break;
+        }
+      }
+      for (let iter = 0; iter < 100; iter++) {
+        const mid = (low + high) / 2;
+        const i = Math.pow(1 + mid, 1 / 12) - 1;
+        const trial = fvFromRate({ P, PMT, i, N, timing });
+        const diff = trial - FV;
+        if (Math.abs(diff) < 0.0001) {
+          best = mid;
+          break;
+        }
+        if (diff < 0) {
+          low = mid;
+        } else {
+          high = mid;
+        }
+        best = mid;
+      }
+      if (best === null) return { error: 'تعذر إيجاد عائد مناسب.' };
+      const i = Math.pow(1 + best, 1 / 12) - 1;
+      return { rate: best * 100, i, N };
+    }
+
+    function computePMT({ FV, P, rate, years, timing }) {
+      const i = monthlyRate(rate);
+      const N = totalMonths(years);
+      if (N <= 0) return { error: 'المدة يجب أن تكون أكبر من صفر.' };
+      let PMT;
+      if (i === 0) {
+        PMT = (FV - P) / N;
+      } else {
+        const factor = Math.pow(1 + i, N);
+        const numerator = FV - P * factor;
+        const base = (factor - 1) / i;
+        const adj = timing === 'start' ? base * (1 + i) : base;
+        PMT = numerator / adj;
+      }
+      return { PMT, N, i };
+    }
+
+    function toYearsMonths(total) {
+      const years = Math.floor(total / 12);
+      let months = Math.round(total - years * 12);
+      let y = years;
+      if (months === 12) { y += 1; months = 0; }
+      return { years: y, months };
+    }
+
+    function handleCalculation(type) {
+      const timing = 'end';
+      switch (type) {
+        case 'fv': {
+          const values = getInputs([
+            ['P', 'fv-principal'], ['PMT', 'fv-pmt'], ['rate', 'fv-rate'], ['years', 'fv-years']
+          ]);
+          if (!validateNumbers(values, ['P', 'PMT', 'rate', 'years'], 'fv-notice')) return;
+          const { fv, N, i } = computeFV({ ...values, timing });
+          document.getElementById('fv-result').textContent = formatCurrency(fv);
+          document.getElementById('fv-summary').textContent = `سيبلغ رصيدك ${formatCurrency(fv)} بعد ${values.years} سنة.`;
+          break;
+        }
+        case 'pv': {
+          const values = getInputs([
+            ['FV', 'pv-fv'], ['PMT', 'pv-pmt'], ['rate', 'pv-rate'], ['years', 'pv-years']
+          ]);
+          if (!validateNumbers(values, ['FV', 'PMT', 'rate', 'years'], 'pv-notice')) return;
+          const res = computePV({ ...values, timing });
+          if (res.error) return showNotice('pv-notice', res.error);
+          document.getElementById('pv-result').textContent = formatCurrency(res.P);
+          document.getElementById('pv-summary').textContent = `تحتاج إلى إيداع أولي قدره ${formatCurrency(res.P)} لتحقيق هدفك.`;
+          break;
+        }
+        case 'n': {
+          const values = getInputs([
+            ['P', 'n-p'], ['FV', 'n-fv'], ['PMT', 'n-pmt'], ['rate', 'n-rate']
+          ]);
+          if (!validateNumbers(values, ['P', 'FV', 'PMT', 'rate'], 'n-notice')) return;
+          const res = computeN({ ...values, timing });
+          if (res.error) return showNotice('n-notice', res.error);
+          const { years, months } = toYearsMonths(res.N);
+          document.getElementById('n-result').textContent = `${years} سنة و ${months} شهر`;
+          document.getElementById('n-summary').textContent = `ستحتاج تقريبًا إلى ${years} سنة و ${months} شهر للوصول لهدفك.`;
+          break;
+        }
+        case 'rate': {
+          const values = getInputs([
+            ['FV', 'rate-fv'], ['P', 'rate-p'], ['PMT', 'rate-pmt'], ['years', 'rate-years']
+          ]);
+          if (!validateNumbers(values, ['FV', 'P', 'PMT', 'years'], 'rate-notice')) return;
+          const res = computeRate({ ...values, timing });
+          if (res.error) return showNotice('rate-notice', res.error);
+          const annualDisplay = formatPercent(res.rate);
+          const monthlyDisplay = formatPercent(res.i * 100);
+          document.getElementById('rate-result').textContent = annualDisplay;
+          document.getElementById('rate-summary').textContent = `العائد المطلوب هو ${annualDisplay} بمعدل شهري ${monthlyDisplay}.`;
+          break;
+        }
+        case 'pmt': {
+          const values = getInputs([
+            ['FV', 'pmt-fv'], ['P', 'pmt-p'], ['rate', 'pmt-rate'], ['years', 'pmt-years']
+          ]);
+          if (!validateNumbers(values, ['FV', 'P', 'rate', 'years'], 'pmt-notice')) return;
+          const res = computePMT({ ...values, timing });
+          if (res.error) return showNotice('pmt-notice', res.error);
+          document.getElementById('pmt-result').textContent = formatCurrency(res.PMT);
+          document.getElementById('pmt-summary').textContent = `يجب أن تستثمر ${formatCurrency(res.PMT)} شهريًا لتحقيق هدفك.`;
+          break;
+        }
+      }
+    }
+
+    document.querySelectorAll('[data-action="calculate"]').forEach(btn => {
+      btn.addEventListener('click', () => handleCalculation(btn.dataset.type));
+    });
+
+    document.querySelectorAll('[data-action="reset"]').forEach(btn => {
+      btn.addEventListener('click', () => resetPanel(btn.dataset.type));
+    });
+
+    document.querySelectorAll('[data-copy]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = document.getElementById(btn.dataset.copy);
+        const text = target?.textContent || '';
+        navigator.clipboard?.writeText(text);
+        btn.textContent = 'تم النسخ!';
+        setTimeout(() => btn.textContent = 'انسخ النتيجة', 1200);
+      });
+    });
+
+    tabButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        tabButtons.forEach(b => b.classList.remove('active'));
+        panels.forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        const panel = document.getElementById(btn.dataset.target);
+        if (panel) {
+          panel.classList.add('active');
+          panels.forEach(p => p.classList.remove('open'));
+          panel.classList.add('open');
+          const toggle = panel.querySelector('.accordion-toggle');
+          if (toggle) {
+            toggle.setAttribute('aria-expanded', 'true');
+          }
+        }
+      });
+    });
+
+    accordionToggles.forEach(toggle => {
+      toggle.addEventListener('click', () => {
+        const panel = toggle.closest('.panel');
+        const isOpen = panel.classList.contains('open');
+        panels.forEach(p => {
+          p.classList.remove('open');
+          const t = p.querySelector('.accordion-toggle');
+          if (t) {
+            t.setAttribute('aria-expanded', 'false');
+          }
+        });
+        if (!isOpen) {
+          panel.classList.add('open');
+          toggle.setAttribute('aria-expanded', 'true');
+        }
+      });
+    });
+
+    // Default open state for desktop
+    function syncDesktopTabs() {
+      if (window.matchMedia('(min-width: 769px)').matches) {
+        const active = document.querySelector('.tab-bar button.active');
+        const target = active?.dataset.target;
+        panels.forEach(p => p.classList.remove('open'));
+        const panel = target ? document.getElementById(target) : panels[0];
+        if (panel) panel.classList.add('open');
+      }
+    }
+
+    window.addEventListener('resize', syncDesktopTabs);
+    syncDesktopTabs();
+  </script>
+</body>
+</html>
