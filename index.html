@@ -9,17 +9,17 @@
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: linear-gradient(135deg, #0f172a 0%, #111827 45%, #0b2f4f 100%);
-      --card-bg: rgba(255, 255, 255, 0.07);
-      --card-solid: #0d1b2a;
-      --primary: #38bdf8;
-      --accent: #a855f7;
-      --muted: #cbd5e1;
-      --text: #e2e8f0;
-      --shadow: 0 20px 50px rgba(0,0,0,0.35);
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #e5e7eb;
+      --primary: #2563eb;
+      --accent: #7c3aed;
+      --muted: #475569;
+      --text: #0f172a;
+      --shadow: 0 12px 40px rgba(15, 23, 42, 0.08);
       --radius: 16px;
-      --success: #22c55e;
-      --danger: #f87171;
+      --success: #16a34a;
+      --danger: #ef4444;
     }
 
     * { box-sizing: border-box; }
@@ -39,13 +39,12 @@
     }
 
     header.hero {
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255,255,255,0.08);
+      background: var(--card-bg);
+      border: 1px solid var(--border);
       box-shadow: var(--shadow);
       border-radius: var(--radius);
       padding: 28px 24px;
       margin-bottom: 18px;
-      backdrop-filter: blur(10px);
     }
 
     header.hero h1 {
@@ -60,40 +59,9 @@
       line-height: 1.6;
     }
 
-    .global-controls {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-top: 14px;
-      align-items: center;
-    }
-
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(255,255,255,0.07);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 999px;
-      padding: 8px 12px;
-      color: var(--text);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
-    }
-
     select, input, button {
       font-family: inherit;
     }
-
-    .pill select {
-      background: transparent;
-      color: var(--text);
-      border: none;
-      outline: none;
-      font-weight: 600;
-      padding: 4px 2px;
-    }
-
-    .pill select option { color: #0f172a; }
 
     .tab-bar {
       display: flex;
@@ -103,31 +71,32 @@
     }
 
     .tab-bar button {
-      border: 1px solid rgba(255,255,255,0.14);
-      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      background: #eef2ff;
       color: var(--text);
       padding: 10px 14px;
       border-radius: 12px;
       cursor: pointer;
-      transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.18);
+      transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s, border 0.2s;
+      box-shadow: 0 8px 18px rgba(37, 99, 235, 0.12);
       min-width: 140px;
       text-align: center;
+      font-weight: 700;
     }
 
     .tab-bar button.active {
       background: linear-gradient(135deg, var(--primary), var(--accent));
-      color: #0b1220;
-      font-weight: 700;
+      color: #ffffff;
+      border-color: transparent;
       transform: translateY(-1px);
-      box-shadow: 0 12px 30px rgba(56,189,248,0.35);
+      box-shadow: 0 12px 28px rgba(37, 99, 235, 0.2);
     }
 
     .panels { display: grid; gap: 14px; }
 
     .panel {
       background: var(--card-bg);
-      border: 1px solid rgba(255,255,255,0.08);
+      border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 14px 16px 16px;
       box-shadow: var(--shadow);
@@ -168,7 +137,7 @@
     }
 
     .field label {
-      font-weight: 600;
+      font-weight: 700;
       color: var(--text);
       display: flex;
       justify-content: space-between;
@@ -176,23 +145,25 @@
     }
 
     .input-wrap {
+      position: relative;
       display: flex;
       align-items: center;
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.1);
+      background: #f8fafc;
+      border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 10px;
+      padding: 10px 12px;
       gap: 8px;
-      transition: border 0.2s, box-shadow 0.2s;
+      transition: border 0.2s, box-shadow 0.2s, background 0.2s;
     }
 
     .input-wrap:focus-within {
       border-color: var(--primary);
-      box-shadow: 0 10px 25px rgba(56,189,248,0.2);
+      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.18);
+      background: #ffffff;
     }
 
     .unit {
-      background: rgba(255,255,255,0.07);
+      background: #e2e8f0;
       padding: 6px 10px;
       border-radius: 10px;
       font-weight: 700;
@@ -200,6 +171,20 @@
       font-size: 13px;
       min-width: 64px;
       text-align: center;
+    }
+
+    .currency-badge {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #e2e8f0;
+      color: var(--text);
+      border-radius: 10px;
+      padding: 6px 10px;
+      font-weight: 800;
+      font-size: 13px;
+      pointer-events: none;
     }
 
     input[type="number"] {
@@ -210,6 +195,11 @@
       color: var(--text);
       font-size: 16px;
       direction: ltr;
+      padding-left: 12px;
+    }
+
+    .input-wrap.has-badge input[type="number"] {
+      padding-left: 90px;
     }
 
     .actions {
@@ -224,20 +214,20 @@
       border-radius: 12px;
       border: none;
       cursor: pointer;
-      font-weight: 700;
-      transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s;
+      font-weight: 800;
+      transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s, opacity 0.2s;
     }
 
     .btn.primary {
       background: linear-gradient(135deg, var(--primary), var(--accent));
-      color: #0b1220;
-      box-shadow: 0 12px 35px rgba(56,189,248,0.35);
+      color: #ffffff;
+      box-shadow: 0 12px 35px rgba(37, 99, 235, 0.25);
     }
 
     .btn.secondary {
-      background: rgba(255,255,255,0.07);
+      background: #e2e8f0;
       color: var(--text);
-      border: 1px solid rgba(255,255,255,0.12);
+      border: 1px solid var(--border);
     }
 
     .btn:hover { transform: translateY(-1px); }
@@ -246,9 +236,9 @@
       margin-top: 8px;
       padding: 10px 12px;
       border-radius: 12px;
-      background: rgba(248,113,113,0.1);
-      border: 1px solid rgba(248,113,113,0.35);
-      color: #fecdd3;
+      background: rgba(239, 68, 68, 0.08);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      color: #b91c1c;
       display: none;
     }
 
@@ -256,8 +246,8 @@
 
     .result-card {
       margin-top: 14px;
-      background: radial-gradient(circle at 20% 20%, rgba(56,189,248,0.12), rgba(168,85,247,0.12)), rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.1);
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.06), rgba(124, 58, 237, 0.06));
+      border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 16px;
       box-shadow: var(--shadow);
@@ -287,11 +277,12 @@
     }
 
     .detail-item {
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.08);
+      background: #f8fafc;
+      border: 1px solid var(--border);
       border-radius: 12px;
       padding: 10px;
       color: var(--muted);
+      font-weight: 600;
     }
 
     footer {
@@ -315,22 +306,7 @@
   <div class="page">
     <header class="hero">
       <h1>حاسبة الاستثمار</h1>
-      <p>أدوات استثمارية عربية لحساب المبلغ النهائي، المبلغ الأولي، المدة، العائد السنوي، أو الاستثمار الشهري مع دعم الإيداع نهاية/بداية الشهر.</p>
-      <div class="global-controls">
-        <div class="pill">
-          <span>العملة:</span>
-          <select id="currency">
-            <option value="SAR">SAR - ر.س</option>
-            <option value="USD">USD - $</option>
-            <option value="EUR">EUR - €</option>
-          </select>
-        </div>
-        <div class="pill">
-          <span>توقيت الإيداع:</span>
-          <label><input type="radio" name="timing" value="end" checked> نهاية الشهر</label>
-          <label><input type="radio" name="timing" value="start"> بداية الشهر</label>
-        </div>
-      </div>
+      <p>أدوات استثمارية عربية لحساب المبلغ النهائي، المبلغ الأولي، المدة، العائد السنوي، أو الاستثمار الشهري مع افتراض إيداع نهاية الشهر.</p>
     </header>
 
     <nav class="tab-bar" aria-label="أنواع الحاسبة">
@@ -348,11 +324,11 @@
           <div class="input-grid">
             <div class="field">
               <label for="fv-principal">المبلغ الأولي (P)</label>
-              <div class="input-wrap"><span class="unit currency-unit">ر.س</span><input id="fv-principal" type="number" min="0" step="0.01" value="10000"></div>
+              <div class="input-wrap has-badge"><span class="currency-badge">ريال</span><input id="fv-principal" type="number" min="0" step="0.01" value="10000"></div>
             </div>
             <div class="field">
               <label for="fv-pmt">الاستثمار الشهري (PMT)</label>
-              <div class="input-wrap"><span class="unit currency-unit">ر.س</span><input id="fv-pmt" type="number" min="0" step="0.01" value="500"></div>
+              <div class="input-wrap has-badge"><span class="currency-badge">ريال</span><input id="fv-pmt" type="number" min="0" step="0.01" value="500"></div>
             </div>
             <div class="field">
               <label for="fv-rate">العائد السنوي (% سنوي)</label>
@@ -392,11 +368,11 @@
           <div class="input-grid">
             <div class="field">
               <label for="pv-fv">المبلغ النهائي (FV)</label>
-              <div class="input-wrap"><span class="unit currency-unit">ر.س</span><input id="pv-fv" type="number" min="0" step="0.01" value="200000"></div>
+              <div class="input-wrap has-badge"><span class="currency-badge">ريال</span><input id="pv-fv" type="number" min="0" step="0.01" value="200000"></div>
             </div>
             <div class="field">
               <label for="pv-pmt">الاستثمار الشهري (PMT)</label>
-              <div class="input-wrap"><span class="unit currency-unit">ر.س</span><input id="pv-pmt" type="number" min="0" step="0.01" value="500"></div>
+              <div class="input-wrap has-badge"><span class="currency-badge">ريال</span><input id="pv-pmt" type="number" min="0" step="0.01" value="500"></div>
             </div>
             <div class="field">
               <label for="pv-rate">العائد السنوي (% سنوي)</label>
@@ -436,15 +412,15 @@
           <div class="input-grid">
             <div class="field">
               <label for="n-p">المبلغ الأولي (P)</label>
-              <div class="input-wrap"><span class="unit currency-unit">ر.س</span><input id="n-p" type="number" min="0" step="0.01" value="10000"></div>
+              <div class="input-wrap has-badge"><span class="currency-badge">ريال</span><input id="n-p" type="number" min="0" step="0.01" value="10000"></div>
             </div>
             <div class="field">
               <label for="n-fv">المبلغ النهائي (FV)</label>
-              <div class="input-wrap"><span class="unit currency-unit">ر.س</span><input id="n-fv" type="number" min="0" step="0.01" value="200000"></div>
+              <div class="input-wrap has-badge"><span class="currency-badge">ريال</span><input id="n-fv" type="number" min="0" step="0.01" value="200000"></div>
             </div>
             <div class="field">
               <label for="n-pmt">الاستثمار الشهري (PMT)</label>
-              <div class="input-wrap"><span class="unit currency-unit">ر.س</span><input id="n-pmt" type="number" min="0" step="0.01" value="500"></div>
+              <div class="input-wrap has-badge"><span class="currency-badge">ريال</span><input id="n-pmt" type="number" min="0" step="0.01" value="500"></div>
             </div>
             <div class="field">
               <label for="n-rate">العائد السنوي (% سنوي)</label>
@@ -476,15 +452,15 @@
           <div class="input-grid">
             <div class="field">
               <label for="rate-fv">المبلغ النهائي (FV)</label>
-              <div class="input-wrap"><span class="unit currency-unit">ر.س</span><input id="rate-fv" type="number" min="0" step="0.01" value="200000"></div>
+              <div class="input-wrap has-badge"><span class="currency-badge">ريال</span><input id="rate-fv" type="number" min="0" step="0.01" value="200000"></div>
             </div>
             <div class="field">
               <label for="rate-p">المبلغ الأولي (P)</label>
-              <div class="input-wrap"><span class="unit currency-unit">ر.س</span><input id="rate-p" type="number" min="0" step="0.01" value="10000"></div>
+              <div class="input-wrap has-badge"><span class="currency-badge">ريال</span><input id="rate-p" type="number" min="0" step="0.01" value="10000"></div>
             </div>
             <div class="field">
               <label for="rate-pmt">الاستثمار الشهري (PMT)</label>
-              <div class="input-wrap"><span class="unit currency-unit">ر.س</span><input id="rate-pmt" type="number" min="0" step="0.01" value="500"></div>
+              <div class="input-wrap has-badge"><span class="currency-badge">ريال</span><input id="rate-pmt" type="number" min="0" step="0.01" value="500"></div>
             </div>
             <div class="field">
               <label for="rate-years">المدة (سنوات)</label>
@@ -520,11 +496,11 @@
           <div class="input-grid">
             <div class="field">
               <label for="pmt-fv">المبلغ النهائي (FV)</label>
-              <div class="input-wrap"><span class="unit currency-unit">ر.س</span><input id="pmt-fv" type="number" min="0" step="0.01" value="200000"></div>
+              <div class="input-wrap has-badge"><span class="currency-badge">ريال</span><input id="pmt-fv" type="number" min="0" step="0.01" value="200000"></div>
             </div>
             <div class="field">
               <label for="pmt-p">المبلغ الأولي (P)</label>
-              <div class="input-wrap"><span class="unit currency-unit">ر.س</span><input id="pmt-p" type="number" min="0" step="0.01" value="10000"></div>
+              <div class="input-wrap has-badge"><span class="currency-badge">ريال</span><input id="pmt-p" type="number" min="0" step="0.01" value="10000"></div>
             </div>
             <div class="field">
               <label for="pmt-rate">العائد السنوي (% سنوي)</label>
@@ -563,28 +539,14 @@
   </div>
 
   <script>
-    const currencySelect = document.getElementById('currency');
-    const timingRadios = document.querySelectorAll('input[name="timing"]');
     const tabButtons = document.querySelectorAll('.tab-bar button');
     const panels = document.querySelectorAll('.panel');
     const accordionToggles = document.querySelectorAll('.accordion-toggle');
 
-    const currencyUnits = {
-      SAR: 'ر.س',
-      USD: '$',
-      EUR: '€'
-    };
-
-    function getTiming() {
-      const checked = Array.from(timingRadios).find(r => r.checked);
-      return checked?.value === 'start' ? 'start' : 'end';
-    }
-
     function formatCurrency(value) {
-      const currency = currencySelect.value || 'SAR';
       return new Intl.NumberFormat('ar-EG', {
         style: 'currency',
-        currency,
+        currency: 'SAR',
         minimumFractionDigits: 0,
         maximumFractionDigits: 2
       }).format(value);
@@ -663,9 +625,8 @@
       return true;
     }
 
-    function commonDetails(N, i, annualInput) {
-      const annualEffective = Math.pow(1 + i, 12) - 1;
-      return `الأشهر: ${N.toFixed(2)} شهر | i الشهري: ${formatPercent(i * 100)} | r السنوي الفعّال: ${formatPercent(annualEffective * 100)} | إدخال المستخدم: ${formatPercent(annualInput)}`;
+    function commonDetails(N, i) {
+      return `الأشهر: ${N.toFixed(2)} شهر | i الشهري: ${formatPercent(i * 100)}`;
     }
 
     function setDetails(el, detailsText) {
@@ -808,7 +769,7 @@
     }
 
     function handleCalculation(type) {
-      const timing = getTiming();
+      const timing = 'end';
       switch (type) {
         case 'fv': {
           const values = getInputs([
@@ -818,7 +779,7 @@
           const { fv, N, i } = computeFV({ ...values, timing });
           document.getElementById('fv-result').textContent = formatCurrency(fv);
           document.getElementById('fv-summary').textContent = `سيبلغ رصيدك ${formatCurrency(fv)} بعد ${values.years} سنة و${values.months} شهرًا.`;
-          setDetails(document.getElementById('fv-details'), commonDetails(N, i, values.rate));
+          setDetails(document.getElementById('fv-details'), commonDetails(N, i));
           break;
         }
         case 'pv': {
@@ -830,7 +791,7 @@
           if (res.error) return showNotice('pv-notice', res.error);
           document.getElementById('pv-result').textContent = formatCurrency(res.P);
           document.getElementById('pv-summary').textContent = `تحتاج إلى إيداع أولي قدره ${formatCurrency(res.P)} لتحقيق هدفك.`;
-          setDetails(document.getElementById('pv-details'), commonDetails(res.N, res.i, values.rate));
+          setDetails(document.getElementById('pv-details'), commonDetails(res.N, res.i));
           break;
         }
         case 'n': {
@@ -843,7 +804,7 @@
           const { years, months } = toYearsMonths(res.N);
           document.getElementById('n-result').textContent = `${years} سنة و ${months} شهر`;
           document.getElementById('n-summary').textContent = `ستحتاج تقريبًا إلى ${years} سنة و ${months} شهر للوصول لهدفك.`;
-          setDetails(document.getElementById('n-details'), commonDetails(res.N, res.i, values.rate));
+          setDetails(document.getElementById('n-details'), commonDetails(res.N, res.i));
           break;
         }
         case 'rate': {
@@ -857,7 +818,7 @@
           const monthlyDisplay = formatPercent(res.i * 100);
           document.getElementById('rate-result').textContent = annualDisplay;
           document.getElementById('rate-summary').textContent = `العائد السنوي المطلوب هو ${annualDisplay} بمعدل شهري ${monthlyDisplay}.`;
-          setDetails(document.getElementById('rate-details'), commonDetails(res.N, res.i, res.rate));
+          setDetails(document.getElementById('rate-details'), commonDetails(res.N, res.i));
           break;
         }
         case 'pmt': {
@@ -869,7 +830,7 @@
           if (res.error) return showNotice('pmt-notice', res.error);
           document.getElementById('pmt-result').textContent = formatCurrency(res.PMT);
           document.getElementById('pmt-summary').textContent = `يجب أن تستثمر ${formatCurrency(res.PMT)} شهريًا لتحقيق هدفك.`;
-          setDetails(document.getElementById('pmt-details'), commonDetails(res.N, res.i, values.rate));
+          setDetails(document.getElementById('pmt-details'), commonDetails(res.N, res.i));
           break;
         }
       }
@@ -929,14 +890,6 @@
           toggle.setAttribute('aria-expanded', 'true');
           toggle.querySelector('span').textContent = '▾';
         }
-      });
-    });
-
-    currencySelect.addEventListener('change', () => {
-      const unit = currencyUnits[currencySelect.value] || 'ر.س';
-      document.querySelectorAll('.currency-unit').forEach(el => el.textContent = unit);
-      document.querySelectorAll('.result-value').forEach(el => {
-        if (!el.textContent || el.textContent === '—') return;
       });
     });
 
